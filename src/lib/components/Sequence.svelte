@@ -82,5 +82,6 @@
 		border-radius: 0.5rem;
 		border: 1px solid green;
 		font-size: 1rem;
+		cursor: pointer;
 	}
 </style>
