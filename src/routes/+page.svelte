@@ -10,5 +10,5 @@
 <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
 <a href="/nodes">Nodes</a>
-<a href="/timer">Timer</a>
+<a href="/timeline">Timeline</a>
 <button onclick={resetDatabase}>Reset database</button>
