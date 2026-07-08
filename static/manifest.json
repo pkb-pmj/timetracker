@@ -1,0 +1,23 @@
+{
+	"name": "TimeTracker",
+	"description": "App for tracking time",
+	"display": "standalone",
+	"start_url": "/",
+	"prefer_related_applications": false,
+	"background_color": "#ffffff",
+	"theme_color": "#ffffff",
+	"icons": [
+		{
+			"src": "/favicon.svg",
+			"sizes": "any"
+		},
+		{
+			"src": "/icon-512x512.png",
+			"sizes": "512x512"
+		},
+		{
+			"src": "/icon-1024x1024.png",
+			"sizes": "1024x1024"
+		}
+	]
+}
