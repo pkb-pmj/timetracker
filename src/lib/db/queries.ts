@@ -66,3 +66,30 @@ export async function getItems(): Promise<ItemsIn<number, number, number>> {
 		})),
 	};
 }
+
+export async function createNode(name: string) {
+	return (await db.insertInto('nodes').values({ name }).returning('id').executeTakeFirstOrThrow())
+		.id;
+}
+
+export async function createActivity(node_id: number) {
+	await db
+		.insertInto('activities')
+		.values({
+			node_id,
+			start_time: Date.now(),
+			end_time: null,
+		})
+		.executeTakeFirstOrThrow();
+}
+
+export async function createEvent(node_id: number) {
+	await db
+		.insertInto('events')
+		.values({
+			time: Date.now(),
+			node_id,
+		})
+		.returning('id')
+		.executeTakeFirstOrThrow();
+}

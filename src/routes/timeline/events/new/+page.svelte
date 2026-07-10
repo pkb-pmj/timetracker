@@ -1,27 +1,12 @@
 <script lang="ts">
 	import NodePicker from '$lib/components/NodePicker.svelte';
-	import { db, invalidate } from '$lib/db';
+	import { invalidate } from '$lib/db';
+	import { createEvent, createNode } from '$lib/db/queries';
 	import type { Attachment } from 'svelte/attachments';
-
-	async function createNode(name: string) {
-		return (await db.insertInto('nodes').values({ name }).returning('id').executeTakeFirstOrThrow())
-			.id;
-	}
-
-	async function createEvent(node_id: number) {
-		await db
-			.insertInto('events')
-			.values({
-				time: Date.now(),
-				node_id,
-			})
-			.returning('id')
-			.executeTakeFirstOrThrow();
-		invalidate('db');
-	}
 
 	async function onPicked(id: number) {
 		await createEvent(id);
+		invalidate('db');
 		history.back();
 	}
 
