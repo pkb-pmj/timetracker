@@ -43,17 +43,11 @@
 		invalidate('db');
 	}
 
-	let eventModal: Modal;
 	let activityModal: Modal;
 
 	async function onActivityPicked(id: number) {
 		await createActivity(id);
 		activityModal.close();
-	}
-
-	async function onEventPicked(id: number) {
-		await createEvent(id);
-		eventModal.close();
 	}
 
 	let { events, activities, intervals } = $derived(await depends('db', getItems()));
@@ -64,14 +58,11 @@
 	<div class="buttons-container">
 		<button onclick={() => activityModal.open()}>New Activity</button>
 		<button onclick={finishAllActivities}>Finish All Activities</button>
-		<button onclick={() => eventModal.open()}>New Event</button>
+		<a href="/timeline/events/new">New Event</a>
 	</div>
 </div>
 <Modal id="/timeline/activities/new" bind:this={activityModal}>
 	<NodePicker onPicked={onActivityPicked} {createNode} />
-</Modal>
-<Modal id="/timeline/events/new" bind:this={eventModal}>
-	<NodePicker onPicked={onEventPicked} {createNode} />
 </Modal>
 
 <style>
@@ -89,7 +80,8 @@
 		gap: 0.5rem;
 		justify-content: stretch;
 	}
-	button {
+	button,
+	a {
 		flex: 1;
 		min-width: fit-content;
 		background: white;
@@ -98,5 +90,6 @@
 		border: 1px solid green;
 		font-size: 1rem;
 		cursor: pointer;
+		text-align: center;
 	}
 </style>
