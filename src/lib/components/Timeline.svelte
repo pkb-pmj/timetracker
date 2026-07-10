@@ -38,7 +38,12 @@
 
 {#snippet timelineActivity(o: ActivityOut<unknown>)}
 	<li class="activity">
-		<a href="/timeline/activities/{o.ref}" class="label-container" style:grid-row={o.start}>
+		<a
+			href="/timeline/activities/{o.ref}"
+			data-sveltekit-noscroll
+			class="label-container"
+			style:grid-row={o.start}
+		>
 			<div class="label-background left">
 				<span class="label">{o.label}</span>
 			</div>

@@ -18,9 +18,9 @@
 <div class="container">
 	<Timeline {events} {activities} {intervals} />
 	<div class="buttons-container">
-		<a href="/timeline/activities/new">New Activity</a>
+		<a href="/timeline/activities/new" data-sveltekit-noscroll>New Activity</a>
 		<button onclick={finishAllActivities}>Finish All Activities</button>
-		<a href="/timeline/events/new">New Event</a>
+		<a href="/timeline/events/new" data-sveltekit-noscroll>New Event</a>
 	</div>
 </div>
 
