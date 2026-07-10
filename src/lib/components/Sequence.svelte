@@ -1,8 +1,6 @@
 <script lang="ts">
-	import NodePicker from '$lib/components/NodePicker.svelte';
 	import { db, depends, invalidate } from '$lib/db';
-	import { createActivity, createNode, getItems } from '$lib/db/queries';
-	import Modal from './Modal.svelte';
+	import { getItems } from '$lib/db/queries';
 	import Timeline from './Timeline.svelte';
 
 	async function finishAllActivities() {
@@ -14,28 +12,17 @@
 		invalidate('db');
 	}
 
-	let activityModal: Modal;
-
-	async function onActivityPicked(id: number) {
-		await createActivity(id);
-		invalidate('db');
-		activityModal.close();
-	}
-
 	let { events, activities, intervals } = $derived(await depends('db', getItems()));
 </script>
 
 <div class="container">
 	<Timeline {events} {activities} {intervals} />
 	<div class="buttons-container">
-		<button onclick={() => activityModal.open()}>New Activity</button>
+		<a href="/timeline/activities/new">New Activity</a>
 		<button onclick={finishAllActivities}>Finish All Activities</button>
 		<a href="/timeline/events/new">New Event</a>
 	</div>
 </div>
-<Modal id="/timeline/activities/new" bind:this={activityModal}>
-	<NodePicker onPicked={onActivityPicked} {createNode} />
-</Modal>
 
 <style>
 	.container {
