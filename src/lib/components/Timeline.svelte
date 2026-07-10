@@ -38,14 +38,14 @@
 
 {#snippet timelineActivity(o: ActivityOut<unknown>)}
 	<li class="activity">
-		<div class="label-container" style:grid-row={o.start}>
+		<a href="/timeline/activities/{o.ref}" class="label-container" style:grid-row={o.start}>
 			<div class="label-background left">
 				<span class="label">{o.label}</span>
 			</div>
 			<div class="label-background right" style:grid-column-end="lane-end {-o.lane}">
 				<span class="duration">{formatDuration(o.duration())}</span>
 			</div>
-		</div>
+		</a>
 		<div
 			class="line-container"
 			style:grid-row-start={o.start}
