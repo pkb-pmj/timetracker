@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tick } from 'svelte';
 	import type { Attachment } from 'svelte/attachments';
 
 	let { children } = $props();
@@ -9,10 +10,13 @@
 		});
 		dialog.addEventListener('close', () => history.back());
 		dialog.showModal();
+		tick().then(() => (hidden = false));
 	};
+
+	let hidden = $state(true);
 </script>
 
-<dialog {@attach pageDialogAttachment}>
+<dialog {@attach pageDialogAttachment} class:hidden>
 	{@render children()}
 </dialog>
 
@@ -24,18 +28,18 @@
 		width: 80%;
 		max-width: 600px;
 		margin: 4rem auto;
-		transform: translateY(100%);
-		transition: transform 150ms ease-out;
+		transform: translateY(0);
+		transition: transform 100ms ease-out;
 		max-height: calc(100dvh - 4rem);
 		flex-direction: column;
-	}
-
-	dialog[open] {
-		transform: translateY(0);
-		display: flex;
-	}
-
-	dialog::backdrop {
-		background: rgba(0, 0, 0, 0.3);
+		&.hidden {
+			transform: translateY(100%);
+		}
+		&[open] {
+			display: flex;
+		}
+		&::backdrop {
+			background: rgba(0, 0, 0, 0.3);
+		}
 	}
 </style>
