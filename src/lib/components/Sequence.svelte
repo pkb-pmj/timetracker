@@ -2,6 +2,7 @@
 	import NodePicker from '$lib/components/NodePicker.svelte';
 	import { db, depends, invalidate } from '$lib/db';
 	import { getItems } from '$lib/db/queries';
+	import Modal from './Modal.svelte';
 	import Timeline from './Timeline.svelte';
 
 	async function createNode(name: string) {
@@ -42,8 +43,18 @@
 		invalidate('db');
 	}
 
-	let eventPicker: NodePicker;
-	let activityPicker: NodePicker;
+	let eventModal: Modal;
+	let activityModal: Modal;
+
+	async function onActivityPicked(id: number) {
+		await createActivity(id);
+		activityModal.close();
+	}
+
+	async function onEventPicked(id: number) {
+		await createEvent(id);
+		eventModal.close();
+	}
 
 	let { events, activities, intervals } = $derived(await depends('db', getItems()));
 </script>
@@ -51,13 +62,17 @@
 <div class="container">
 	<Timeline {events} {activities} {intervals} />
 	<div class="buttons-container">
-		<button onclick={() => activityPicker.open()}>New Activity</button>
+		<button onclick={() => activityModal.open()}>New Activity</button>
 		<button onclick={finishAllActivities}>Finish All Activities</button>
-		<button onclick={() => eventPicker.open()}>New Event</button>
+		<button onclick={() => eventModal.open()}>New Event</button>
 	</div>
 </div>
-<NodePicker onPicked={createActivity} {createNode} bind:this={activityPicker} />
-<NodePicker onPicked={createEvent} {createNode} bind:this={eventPicker} />
+<Modal id="/timeline/activities/new" bind:this={activityModal}>
+	<NodePicker onPicked={onActivityPicked} {createNode} />
+</Modal>
+<Modal id="/timeline/events/new" bind:this={eventModal}>
+	<NodePicker onPicked={onEventPicked} {createNode} />
+</Modal>
 
 <style>
 	.container {

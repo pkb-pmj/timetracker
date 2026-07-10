@@ -2,11 +2,6 @@
 	import { db, type Node } from '$lib/db';
 	import type { Selectable } from 'kysely';
 	import type { Attachment } from 'svelte/attachments';
-	import Modal from './Modal.svelte';
-
-	export function open() {
-		modal.open();
-	}
 
 	let {
 		onPicked,
@@ -62,7 +57,6 @@
 	function selectOption(id: number) {
 		activeId = id;
 		selected = nodes.find((node) => node.id === id) ?? null;
-		modal.close();
 		onPicked(id);
 	}
 
@@ -84,53 +78,48 @@
 		query = '';
 	}
 
-	let modal: Modal;
-
 	async function onCreateNew() {
 		onPicked(await createNode(query));
-		modal.close();
 	}
 </script>
 
-<Modal bind:this={modal} id="NodePicker" {onClose}>
-	<div class="combobox">
-		<!-- svelte-ignore a11y_autofocus -->
-		<input
-			type="text"
-			role="combobox"
-			aria-autocomplete="list"
-			aria-expanded="true"
-			aria-controls="listbox"
-			aria-activedescendant={activeId !== null ? `option-${activeId}` : undefined}
-			autocomplete="off"
-			placeholder="Search"
-			autocapitalize="words"
-			autofocus
-			onkeydown={onKeyDown}
-			bind:value={query}
-			bind:this={inputEl}
-		/>
-		<ul id="listbox" role="listbox" tabindex="-1">
-			{#each nodes as node (node.id)}
-				<li
-					id="option-{node.id}"
-					role="option"
-					aria-selected={activeId === node.id}
-					onmousedown={(e) => {
-						e.preventDefault();
-						selectOption(node.id);
-					}}
-					{@attach scrollIntoView(node.id)}
-				>
-					<span class="name">{node.name}</span> <span class="id">#{node.id}</span>
-				</li>
-			{:else}
-				<span class="no-elements">No matching options</span>
-				<button class="create" onclick={onCreateNew}>Create new node: {query}</button>
-			{/each}
-		</ul>
-	</div>
-</Modal>
+<div class="combobox">
+	<!-- svelte-ignore a11y_autofocus -->
+	<input
+		type="text"
+		role="combobox"
+		aria-autocomplete="list"
+		aria-expanded="true"
+		aria-controls="listbox"
+		aria-activedescendant={activeId !== null ? `option-${activeId}` : undefined}
+		autocomplete="off"
+		placeholder="Search"
+		autocapitalize="words"
+		autofocus
+		onkeydown={onKeyDown}
+		bind:value={query}
+		bind:this={inputEl}
+	/>
+	<ul id="listbox" role="listbox" tabindex="-1">
+		{#each nodes as node (node.id)}
+			<li
+				id="option-{node.id}"
+				role="option"
+				aria-selected={activeId === node.id}
+				onmousedown={(e) => {
+					e.preventDefault();
+					selectOption(node.id);
+				}}
+				{@attach scrollIntoView(node.id)}
+			>
+				<span class="name">{node.name}</span> <span class="id">#{node.id}</span>
+			</li>
+		{:else}
+			<span class="no-elements">No matching options</span>
+			<button class="create" onclick={onCreateNew}>Create new node: {query}</button>
+		{/each}
+	</ul>
+</div>
 
 <style>
 	.combobox {
