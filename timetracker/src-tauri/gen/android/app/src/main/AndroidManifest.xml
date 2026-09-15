@@ -34,4 +34,7 @@
             android:resource="@xml/file_paths" />
         </provider>
     </application>
+    <!-- VNIDROP FS PLUGIN. AUTO-GENERATED. DO NOT REMOVE. -->
+    
+    <!-- VNIDROP FS PLUGIN. AUTO-GENERATED. DO NOT REMOVE. -->
 </manifest>
