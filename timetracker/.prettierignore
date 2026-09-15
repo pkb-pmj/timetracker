@@ -12,3 +12,4 @@ bun.lockb
 # Tauri
 /src-tauri/*
 !/src-tauri/*.json
+!/src-tauri/capabilities
