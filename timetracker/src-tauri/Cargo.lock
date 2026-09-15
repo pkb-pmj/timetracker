@@ -3617,9 +3617,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-vnidrop-fs"
-version = "0.1.0"
+version = "1.0.0-rc.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea85969352ff42b51578d74f0cbcd40e37f028374e077d93ec4839dc5a37f7af"
+checksum = "d790a815f346068182dbf73f73cc8e61624ea3468b7779f602af1bb50964df2b"
 dependencies = [
  "base64 0.22.1",
  "glob",
