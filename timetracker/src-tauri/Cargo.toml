@@ -26,6 +26,7 @@ tauri-plugin-fs = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-vnidrop-fs = "1.0.0-rc.2"
 toml = "1.1.6"
+thiserror = "2.0.20"
 
 
 # Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration

@@ -3838,6 +3838,7 @@ dependencies = [
  "tauri-plugin-fs",
  "tauri-plugin-opener",
  "tauri-plugin-vnidrop-fs",
+ "thiserror 2.0.20",
  "toml 1.1.6+spec-1.1.0",
 ]
 
