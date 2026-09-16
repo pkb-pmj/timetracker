@@ -9,6 +9,17 @@
         // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
         greetMsg = await invoke('greet', { name });
     }
+
+    let config = $state<any>(null);
+    let error = $state('');
+
+    async function getConfig() {
+        config = await invoke('get_config');
+    }
+
+    async function getError() {
+        error = await invoke('get_error');
+    }
 </script>
 
 <main class="container">
@@ -32,6 +43,10 @@
         <button type="submit">Greet</button>
     </form>
     <p>{greetMsg}</p>
+    <button onclick={getError}>Get Error</button>
+    <button onclick={getConfig}>Get Config</button>
+    <p>{error}</p>
+    <p>{JSON.stringify(config)}</p>
 </main>
 
 <style>
