@@ -3838,6 +3838,7 @@ dependencies = [
  "tauri-plugin-fs",
  "tauri-plugin-opener",
  "tauri-plugin-vnidrop-fs",
+ "toml 1.1.6+spec-1.1.0",
 ]
 
 [[package]]
