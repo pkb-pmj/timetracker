@@ -1,6 +1,19 @@
-use std::path::Path;
+use std::{path::Path, sync::Mutex};
 
 use sqlx::{migrate::MigrateDatabase, query, Sqlite, SqlitePool};
+use uuid::{ContextV7, Timestamp, Uuid};
+
+pub struct UuidGenerator(Mutex<ContextV7>);
+
+impl UuidGenerator {
+    pub fn new() -> Self {
+        Self(Mutex::new(ContextV7::new().with_additional_precision()))
+    }
+
+    pub fn generate(&self) -> Uuid {
+        Uuid::new_v7(Timestamp::now(&self.0))
+    }
+}
 
 pub async fn get_pool(database_path: impl AsRef<Path>) -> Result<SqlitePool, sqlx::Error> {
     std::fs::create_dir_all(database_path.as_ref().parent().expect("invalid path"))

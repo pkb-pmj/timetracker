@@ -4,6 +4,8 @@ use sqlx::SqlitePool;
 use tauri::{Manager, State};
 use tauri_plugin_store::StoreExt;
 
+use crate::db::UuidGenerator;
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -29,6 +31,8 @@ pub fn run() {
             let store = app.store("config.json")?;
             store.set("key", "value");
             println!("{:?}", store.get("key"));
+
+            app.manage(UuidGenerator::new());
 
             let database_path = app
                 .path()
