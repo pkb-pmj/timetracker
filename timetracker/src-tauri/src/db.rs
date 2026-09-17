@@ -1,7 +1,13 @@
 use std::{path::Path, sync::Mutex};
 
-use sqlx::{migrate::MigrateDatabase, query, Sqlite, SqlitePool};
+use sqlx::{
+    migrate,
+    migrate::{MigrateDatabase, Migrator},
+    query, Sqlite, SqlitePool,
+};
 use uuid::{ContextV7, Timestamp, Uuid};
+
+static MIGRATOR: Migrator = migrate!("./migrations");
 
 pub struct UuidGenerator(Mutex<ContextV7>);
 
@@ -33,6 +39,10 @@ pub async fn get_pool(database_path: impl AsRef<Path>) -> Result<SqlitePool, sql
     let db = SqlitePool::connect(&database_url).await?;
 
     test(&db).await?;
+
+    // TODO: only reset database if migrations fail?
+    MIGRATOR.undo(&db, 0).await?;
+    MIGRATOR.run(&db).await?;
 
     Ok(db)
 }
