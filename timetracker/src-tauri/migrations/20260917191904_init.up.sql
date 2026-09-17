@@ -1,17 +1,13 @@
-CREATE TABLE timestamps (
-    time    INTEGER PRIMARY KEY
-);
-
 CREATE TABLE events (
-    id      TEXT PRIMARY KEY,
-    time    INTEGER NOT NULL REFERENCES timestamps(time),
+    id      BLOB PRIMARY KEY,
+    time    INTEGER NOT NULL,
     name    TEXT NOT NULL
 ) STRICT;
 
 CREATE TABLE activities (
-    id      TEXT PRIMARY KEY,
-    start   INTEGER NOT NULL REFERENCES timestamps(time),
-    end     INTEGER NOT NULL REFERENCES timestamps(time),
+    id      BLOB PRIMARY KEY,
+    start   INTEGER NOT NULL,
+    end     INTEGER NOT NULL,
     name    TEXT NOT NULL
 ) STRICT;
 
