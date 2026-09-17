@@ -11,12 +11,16 @@
         greetMsg = await invoke('greet', { name });
     }
 
-    let config = $state<any>(null);
+    let value = $state<any>(null);
 
     const store = new LazyStore('config.json');
 
     async function getConfig() {
-        config = Object.fromEntries(await store.entries());
+        value = Object.fromEntries(await store.entries());
+    }
+
+    async function dbTest() {
+        value = await invoke('db_test');
     }
 </script>
 
@@ -42,7 +46,8 @@
     </form>
     <p>{greetMsg}</p>
     <button onclick={getConfig}>Get Config</button>
-    <p>{JSON.stringify(config)}</p>
+    <button onclick={dbTest}>Test Database</button>
+    <p>{JSON.stringify(value)}</p>
 </main>
 
 <style>
