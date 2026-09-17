@@ -3,6 +3,9 @@ use std::path::Path;
 use sqlx::{migrate::MigrateDatabase, query, Sqlite, SqlitePool};
 
 pub async fn get_pool(database_path: impl AsRef<Path>) -> Result<SqlitePool, sqlx::Error> {
+    std::fs::create_dir_all(database_path.as_ref().parent().expect("invalid path"))
+        .expect("failed to create database directory");
+
     let database_url = format!("sqlite://{}", database_path.as_ref().display());
 
     println!("{}", database_url);
