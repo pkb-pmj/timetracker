@@ -20,6 +20,16 @@ Go to repo root.
 
 Use `pnpm install` to install dependencies.
 
+Install `sqlx-cli` to handle migrations and dev database: `cargo install sqlx-cli`.
+
+Go to `/src-tauri/`.
+
+Create a `/src-tauri/.env` file with `DATABASE_URL` variable set, e.g. `DATABASE_URL="sqlite://dev.sqlite3"` (or use another method to specify `DATABASE_URL` - see [`sqlx` README](https://github.com/transact-rs/sqlx/blob/main/README.md#compile-time-verification)).
+
+Use `sqlx database create` to create the dev database. Then `sqlx` macros in Rust will be able to compile.
+
+Go back to repo root.
+
 Then use `pnpm tauri dev` to run the app on desktop, or `pnpm tauri android dev`/`pnpm tauri ios dev` to run on mobile. On the first run it will probably install Rust dependencies, so it might take some time.
 
 ## Troubleshooting
