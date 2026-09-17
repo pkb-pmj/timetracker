@@ -28,6 +28,7 @@ tauri-plugin-vnidrop-fs = "1.0.0-rc.2"
 toml = "1.1.6"
 thiserror = "2.0.20"
 tauri-plugin-store = "2"
+sqlx = { version = "0.9.0", features = ["macros", "migrate", "runtime-tokio", "sqlite"] , default-features = false}
 
 
 # Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
