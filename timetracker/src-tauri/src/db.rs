@@ -1,4 +1,8 @@
-use std::{path::Path, sync::Mutex};
+use std::{
+    path::Path,
+    sync::Mutex,
+    time::{SystemTime, UNIX_EPOCH},
+};
 
 use sqlx::{
     migrate,
@@ -19,6 +23,14 @@ impl UuidGenerator {
     pub fn generate(&self) -> Uuid {
         Uuid::new_v7(Timestamp::now(&self.0))
     }
+}
+
+fn now() -> i64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
+        .cast_signed()
 }
 
 pub async fn get_pool(database_path: impl AsRef<Path>) -> Result<SqlitePool, sqlx::Error> {
