@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invoke } from '@tauri-apps/api/core';
+    import { LazyStore } from '@tauri-apps/plugin-store';
 
     let name = $state('');
     let greetMsg = $state('');
@@ -11,14 +12,11 @@
     }
 
     let config = $state<any>(null);
-    let error = $state('');
+
+    const store = new LazyStore('config.json');
 
     async function getConfig() {
-        config = await invoke('get_config');
-    }
-
-    async function getError() {
-        error = await invoke('get_error');
+        config = Object.fromEntries(await store.entries());
     }
 </script>
 
@@ -43,9 +41,7 @@
         <button type="submit">Greet</button>
     </form>
     <p>{greetMsg}</p>
-    <button onclick={getError}>Get Error</button>
     <button onclick={getConfig}>Get Config</button>
-    <p>{error}</p>
     <p>{JSON.stringify(config)}</p>
 </main>
 
