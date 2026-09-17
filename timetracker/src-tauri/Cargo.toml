@@ -38,3 +38,8 @@ lto = true
 opt-level = 3
 panic = "abort"
 strip = true
+
+# make sqlx macros faster
+# https://github.com/transact-rs/sqlx/blob/main/README.md#compile-time-verification
+[profile.dev.package.sqlx-macros]
+opt-level = 3
