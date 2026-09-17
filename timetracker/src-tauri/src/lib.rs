@@ -3,6 +3,7 @@ mod db;
 use sqlx::SqlitePool;
 use tauri::{Manager, State};
 use tauri_plugin_store::StoreExt;
+use uuid::Uuid;
 
 use crate::db::UuidGenerator;
 
@@ -17,6 +18,17 @@ async fn db_test(db: State<'_, SqlitePool>) -> Result<i64, String> {
     db::test(&db).await.map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+async fn create_event(
+    db: State<'_, SqlitePool>,
+    uuid_generator: State<'_, UuidGenerator>,
+    name: String,
+) -> Result<Uuid, String> {
+    db::create_event(&db, &uuid_generator, &name)
+        .await
+        .map_err(|e| e.to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -25,7 +37,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_vnidrop_fs::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, db_test])
+        .invoke_handler(tauri::generate_handler![greet, db_test, create_event])
         .setup(|app| {
             // Store plugin uses .app_data_dir() internally
             let store = app.store("config.json")?;

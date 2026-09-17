@@ -62,3 +62,23 @@ pub async fn get_pool(database_path: impl AsRef<Path>) -> Result<SqlitePool, sql
 pub async fn test(db: &SqlitePool) -> Result<i64, sqlx::Error> {
     Ok(query!("SELECT (1) as id").fetch_one(db).await?.id)
 }
+
+pub async fn create_event(
+    db: &SqlitePool,
+    uuid_generator: &UuidGenerator,
+    name: &str,
+) -> Result<Uuid, sqlx::Error> {
+    Ok(query!(
+        r#"
+            INSERT INTO events (id, time, name)
+            VALUES (?, ?, ?)
+            RETURNING id AS "id: Uuid"
+        "#,
+        uuid_generator.generate(),
+        now(),
+        name,
+    )
+    .fetch_one(db)
+    .await?
+    .id)
+}

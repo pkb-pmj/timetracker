@@ -22,6 +22,10 @@
     async function dbTest() {
         value = await invoke('db_test');
     }
+
+    async function createEvent(name: string) {
+        value = await invoke('create_event', { name });
+    }
 </script>
 
 <main class="container">
@@ -47,6 +51,7 @@
     <p>{greetMsg}</p>
     <button onclick={getConfig}>Get Config</button>
     <button onclick={dbTest}>Test Database</button>
+    <button onclick={() => createEvent(name)}>Create Event</button>
     <p>{JSON.stringify(value)}</p>
 </main>
 
