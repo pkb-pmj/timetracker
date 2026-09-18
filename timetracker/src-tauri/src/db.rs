@@ -13,6 +13,11 @@ use uuid::{ContextV7, Timestamp, Uuid};
 
 static MIGRATOR: Migrator = migrate!("./migrations");
 
+pub struct Database {
+    pool: SqlitePool,
+    uuid_generator: UuidGenerator,
+}
+
 pub struct UuidGenerator(Mutex<ContextV7>);
 
 impl UuidGenerator {
@@ -33,52 +38,57 @@ fn now() -> i64 {
         .cast_signed()
 }
 
-pub async fn get_pool(database_path: impl AsRef<Path>) -> Result<SqlitePool, sqlx::Error> {
-    std::fs::create_dir_all(database_path.as_ref().parent().expect("invalid path"))
-        .expect("failed to create database directory");
+impl Database {
+    pub async fn new(database_path: impl AsRef<Path>) -> Result<Self, sqlx::Error> {
+        std::fs::create_dir_all(database_path.as_ref().parent().expect("invalid path"))
+            .expect("failed to create database directory");
 
-    let database_url = format!("sqlite://{}", database_path.as_ref().display());
+        let database_url = format!("sqlite://{}", database_path.as_ref().display());
 
-    println!("{}", database_url);
+        println!("{}", database_url);
 
-    if !Sqlite::database_exists(&database_url)
-        .await
-        .unwrap_or(false)
-    {
-        Sqlite::create_database(&database_url).await?;
+        if !Sqlite::database_exists(&database_url)
+            .await
+            .unwrap_or(false)
+        {
+            Sqlite::create_database(&database_url).await?;
+        }
+
+        let pool = SqlitePool::connect(&database_url).await?;
+
+        // TODO: only reset database if migrations fail?
+        MIGRATOR.undo(&pool, 0).await?;
+        MIGRATOR.run(&pool).await?;
+
+        let uuid_generator = UuidGenerator::new();
+
+        Ok(Self {
+            pool,
+            uuid_generator,
+        })
     }
 
-    let db = SqlitePool::connect(&database_url).await?;
+    fn new_uuid(&self) -> Uuid {
+        self.uuid_generator.generate()
+    }
 
-    test(&db).await?;
+    pub async fn test(&self) -> Result<i64, sqlx::Error> {
+        Ok(query!("SELECT (1) as id").fetch_one(&self.pool).await?.id)
+    }
 
-    // TODO: only reset database if migrations fail?
-    MIGRATOR.undo(&db, 0).await?;
-    MIGRATOR.run(&db).await?;
-
-    Ok(db)
-}
-
-pub async fn test(db: &SqlitePool) -> Result<i64, sqlx::Error> {
-    Ok(query!("SELECT (1) as id").fetch_one(db).await?.id)
-}
-
-pub async fn create_event(
-    db: &SqlitePool,
-    uuid_generator: &UuidGenerator,
-    name: &str,
-) -> Result<Uuid, sqlx::Error> {
-    Ok(query!(
-        r#"
-            INSERT INTO events (id, time, name)
-            VALUES (?, ?, ?)
-            RETURNING id AS "id: Uuid"
-        "#,
-        uuid_generator.generate(),
-        now(),
-        name,
-    )
-    .fetch_one(db)
-    .await?
-    .id)
+    pub async fn create_event(&self, name: &str) -> Result<Uuid, sqlx::Error> {
+        Ok(query!(
+            r#"
+                INSERT INTO events (id, time, name)
+                VALUES (?, ?, ?)
+                RETURNING id AS "id: Uuid"
+            "#,
+            self.new_uuid(),
+            now(),
+            name,
+        )
+        .fetch_one(&self.pool)
+        .await?
+        .id)
+    }
 }

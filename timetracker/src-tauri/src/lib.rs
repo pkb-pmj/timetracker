@@ -1,11 +1,10 @@
 mod db;
 
-use sqlx::SqlitePool;
 use tauri::{Manager, State};
 use tauri_plugin_store::StoreExt;
 use uuid::Uuid;
 
-use crate::db::UuidGenerator;
+use crate::db::{Database, UuidGenerator};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -14,19 +13,13 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-async fn db_test(db: State<'_, SqlitePool>) -> Result<i64, String> {
-    db::test(&db).await.map_err(|e| e.to_string())
+async fn db_test(db: State<'_, Database>) -> Result<i64, String> {
+    db.test().await.map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-async fn create_event(
-    db: State<'_, SqlitePool>,
-    uuid_generator: State<'_, UuidGenerator>,
-    name: String,
-) -> Result<Uuid, String> {
-    db::create_event(&db, &uuid_generator, &name)
-        .await
-        .map_err(|e| e.to_string())
+async fn create_event(db: State<'_, Database>, name: String) -> Result<Uuid, String> {
+    db.create_event(&name).await.map_err(|e| e.to_string())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -51,7 +44,7 @@ pub fn run() {
                 .app_data_dir()
                 .expect("app_data_dir returned None")
                 .join("db.sqlite3");
-            let db = tauri::async_runtime::block_on(db::get_pool(&database_path))?;
+            let db = tauri::async_runtime::block_on(Database::new(&database_path))?;
             app.manage(db);
 
             Ok(())
