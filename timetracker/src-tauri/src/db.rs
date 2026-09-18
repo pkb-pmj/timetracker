@@ -22,7 +22,7 @@ pub struct UuidGenerator(Mutex<ContextV7>);
 
 impl UuidGenerator {
     pub fn new() -> Self {
-        Self(Mutex::new(ContextV7::new().with_additional_precision()))
+        Self(Mutex::new(ContextV7::new()))
     }
 
     pub fn generate(&self) -> Uuid {
