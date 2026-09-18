@@ -11,5 +11,8 @@ CREATE TABLE activities (
     name    TEXT NOT NULL
 ) STRICT;
 
+CREATE INDEX events_time_idx ON events (time);
 CREATE INDEX events_name_idx ON events (name);
+CREATE INDEX activities_start_idx ON activities (start);
+CREATE INDEX activities_end_idx ON activities (end);
 CREATE INDEX activities_name_idx ON activities (name);
