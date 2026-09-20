@@ -7,7 +7,7 @@ CREATE TABLE events (
 CREATE TABLE activities (
     id      BLOB PRIMARY KEY,
     start   INTEGER NOT NULL,
-    end     INTEGER NOT NULL,
+    end     INTEGER,
     name    TEXT NOT NULL
 ) STRICT;
 
