@@ -1,9 +1,12 @@
+pub mod activities;
+
 use std::{
     path::Path,
     sync::Mutex,
     time::{SystemTime, UNIX_EPOCH},
 };
 
+use serde::{Serialize, Serializer};
 use sqlx::{
     migrate,
     migrate::{MigrateDatabase, Migrator},
@@ -68,6 +71,10 @@ impl Database {
         })
     }
 
+    fn pool(&self) -> &SqlitePool {
+        &self.pool
+    }
+
     fn new_uuid(&self) -> Uuid {
         self.uuid_generator.generate()
     }
@@ -92,3 +99,20 @@ impl Database {
         .id)
     }
 }
+
+#[derive(Debug, thiserror::Error)]
+pub enum DatabaseError {
+    #[error("{0}")]
+    Sqlx(#[from] sqlx::Error),
+}
+
+impl Serialize for DatabaseError {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+pub type DatabaseResult<T> = Result<T, DatabaseError>;

@@ -4,7 +4,7 @@ use tauri::{Manager, State};
 use tauri_plugin_store::StoreExt;
 use uuid::Uuid;
 
-use crate::db::{Database, UuidGenerator};
+use crate::db::{activities, Database, UuidGenerator};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -30,7 +30,17 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_vnidrop_fs::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, db_test, create_event])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            db_test,
+            create_event,
+            activities::start_activity,
+            activities::update_activity_start,
+            activities::update_activity_end,
+            activities::update_activity_name,
+            activities::get_activity,
+            activities::get_all_activities,
+        ])
         .setup(|app| {
             // Store plugin uses .app_data_dir() internally
             let store = app.store("config.json")?;
