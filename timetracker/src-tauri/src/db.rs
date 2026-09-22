@@ -1,6 +1,7 @@
 pub mod activities;
 
 use std::{
+    fmt::Display,
     path::Path,
     sync::Mutex,
     time::{SystemTime, UNIX_EPOCH},
@@ -100,19 +101,23 @@ impl Database {
     }
 }
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, thiserror::Error, Serialize, specta::Type)]
 pub enum DatabaseError {
     #[error("{0}")]
-    Sqlx(#[from] sqlx::Error),
+    Sqlx(
+        #[serde(serialize_with = "serialize_to_string")]
+        #[specta(type = String)]
+        #[from]
+        sqlx::Error,
+    ),
 }
 
-impl Serialize for DatabaseError {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(&self.to_string())
-    }
+fn serialize_to_string<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+    T: Display,
+{
+    serializer.collect_str(value)
 }
 
 pub type DatabaseResult<T> = Result<T, DatabaseError>;

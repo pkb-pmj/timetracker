@@ -5,15 +5,16 @@ use uuid::Uuid;
 
 use crate::db::{Database, DatabaseResult};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
 pub struct Activity {
-    pub id: Uuid,
+    pub id: String,
     pub start: i64,
     pub end: Option<i64>,
     pub name: String,
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn start_activity(
     db: State<'_, Database>,
     start: i64,
@@ -35,6 +36,7 @@ pub async fn start_activity(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn update_activity_start(
     db: State<'_, Database>,
     id: Uuid,
@@ -56,6 +58,7 @@ pub async fn update_activity_start(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn update_activity_end(
     db: State<'_, Database>,
     id: Uuid,
@@ -77,6 +80,7 @@ pub async fn update_activity_end(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn update_activity_name(
     db: State<'_, Database>,
     id: Uuid,
@@ -98,6 +102,7 @@ pub async fn update_activity_name(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_activity(db: State<'_, Database>, id: Uuid) -> DatabaseResult<Activity> {
     Ok(query_as!(
         Activity,
@@ -113,6 +118,7 @@ pub async fn get_activity(db: State<'_, Database>, id: Uuid) -> DatabaseResult<A
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_all_activities(db: State<'_, Database>) -> DatabaseResult<Vec<Activity>> {
     Ok(query_as!(
         Activity,
