@@ -1,4 +1,5 @@
 mod db;
+mod timestamp;
 
 use specta_typescript::semantic;
 use specta_typescript::Typescript;

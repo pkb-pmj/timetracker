@@ -3,13 +3,16 @@ use sqlx::{query, query_as};
 use tauri::State;
 use uuid::Uuid;
 
-use crate::db::{Database, DatabaseResult};
+use crate::{
+    db::{Database, DatabaseResult},
+    timestamp::{NullableTimestamp, Timestamp},
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
 pub struct Activity {
     pub id: String,
-    pub start: i64,
-    pub end: Option<i64>,
+    pub start: Timestamp,
+    pub end: NullableTimestamp,
     pub name: String,
 }
 
@@ -17,7 +20,7 @@ pub struct Activity {
 #[specta::specta]
 pub async fn start_activity(
     db: State<'_, Database>,
-    start: i64,
+    start: Timestamp,
     name: &str,
 ) -> DatabaseResult<Uuid> {
     Ok(query!(
@@ -40,7 +43,7 @@ pub async fn start_activity(
 pub async fn update_activity_start(
     db: State<'_, Database>,
     id: Uuid,
-    start: i64,
+    start: Timestamp,
 ) -> DatabaseResult<()> {
     query!(
         r#"
@@ -62,7 +65,7 @@ pub async fn update_activity_start(
 pub async fn update_activity_end(
     db: State<'_, Database>,
     id: Uuid,
-    end: Option<i64>,
+    end: NullableTimestamp,
 ) -> DatabaseResult<()> {
     query!(
         r#"
