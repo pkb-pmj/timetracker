@@ -80,8 +80,8 @@ impl Database {
         self.uuid_generator.generate()
     }
 
-    pub async fn test(&self) -> Result<i64, sqlx::Error> {
-        Ok(query!("SELECT (1) as id").fetch_one(&self.pool).await?.id)
+    pub async fn test(&self) -> Result<i32, sqlx::Error> {
+        Ok(query!("SELECT (1) as id").fetch_one(&self.pool).await?.id as i32)
     }
 
     pub async fn create_event(&self, name: &str) -> Result<Uuid, sqlx::Error> {

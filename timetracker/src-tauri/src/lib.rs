@@ -18,7 +18,7 @@ fn greet(name: &str) -> String {
 
 #[tauri::command]
 #[specta::specta]
-async fn db_test(db: State<'_, Database>) -> Result<i64, String> {
+async fn db_test(db: State<'_, Database>) -> Result<i32, String> {
     db.test().await.map_err(|e| e.to_string())
 }
 
