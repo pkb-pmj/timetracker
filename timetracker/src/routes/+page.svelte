@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { commands } from '$lib/bindings';
     import { invoke } from '@tauri-apps/api/core';
     import { LazyStore } from '@tauri-apps/plugin-store';
 
@@ -26,6 +27,11 @@
     async function createEvent(name: string) {
         value = await invoke('create_event', { name });
     }
+
+    async function startActivity() {
+        const result = await commands.startActivity(new Date(), name);
+        if (result.status == 'ok') value = await commands.getActivity(result.data);
+    }
 </script>
 
 <main class="container">
@@ -52,6 +58,7 @@
     <button onclick={getConfig}>Get Config</button>
     <button onclick={dbTest}>Test Database</button>
     <button onclick={() => createEvent(name)}>Create Event</button>
+    <button onclick={startActivity}>Start Activity</button>
     <p>{JSON.stringify(value)}</p>
 </main>
 
