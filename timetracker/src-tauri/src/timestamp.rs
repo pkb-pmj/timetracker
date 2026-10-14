@@ -78,9 +78,51 @@ impl From<i64> for Timestamp {
     }
 }
 
-#[derive(Debug, Clone, Copy, specta::Type, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct NullableTimestamp(Option<DateTime<Utc>>);
+
+impl specta::Type for NullableTimestamp {
+    fn definition(types: &mut specta::Types) -> specta::datatype::DataType {
+        use specta::datatype;
+        use std::borrow::Cow;
+        static SENTINEL: &str = concat!(module_path!(), "::", stringify!(NullableTimestamp));
+        fn build(types: &mut specta::Types) -> datatype::DataType {
+            let mut e = datatype::Struct::unnamed()
+                .field({
+                    let mut field = datatype::Field::default();
+                    field.ty = Some(<Option<DateTime<Utc>> as specta::Type>::definition(types));
+                    field
+                })
+                .build();
+            match &mut e {
+                datatype::DataType::Struct(s) => {
+                    let attrs = &mut s.attributes;
+                    attrs.insert("serde:container:transparent", true);
+                }
+                datatype::DataType::Enum(en) => {
+                    let attrs = &mut en.attributes;
+                    attrs.insert("serde:container:transparent", true);
+                }
+                _ => unreachable!("specta derive generated non-container datatype"),
+            }
+            e
+        }
+        datatype::DataType::Reference(datatype::NamedDataType::init_with_sentinel(
+            SENTINEL,
+            &[],
+            false,
+            false,
+            types,
+            |types, ndt| {
+                ndt.name = Cow::Borrowed("NullableTimestamp");
+                ndt.module_path = Cow::Borrowed(module_path!());
+                ndt.ty = Some(build(types));
+            },
+            build,
+        ))
+    }
+}
 
 impl Type<Sqlite> for NullableTimestamp {
     fn type_info() -> SqliteTypeInfo {
