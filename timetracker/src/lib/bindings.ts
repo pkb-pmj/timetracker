@@ -9,10 +9,10 @@ export const commands = {
 	createEvent: (name: string) => typedError<string, string>(__TAURI_INVOKE("create_event", { name })),
 	startActivity: (start: Timestamp, name: string) => typedError<string, DatabaseError_Serialize>(__TAURI_INVOKE("start_activity", { start, name })),
 	updateActivityStart: (id: string, start: Timestamp) => typedError<null, DatabaseError_Serialize>(__TAURI_INVOKE("update_activity_start", { id, start })),
-	updateActivityEnd: (id: string, end: NullableTimestamp) => typedError<null, DatabaseError_Serialize>(__TAURI_INVOKE("update_activity_end", { id, end: ([end[0]==null?end[0]:end[0]]) })),
+	updateActivityEnd: (id: string, end: NullableTimestamp) => typedError<null, DatabaseError_Serialize>(__TAURI_INVOKE("update_activity_end", { id, end: end==null?end:end })),
 	updateActivityName: (id: string, name: string) => typedError<null, DatabaseError_Serialize>(__TAURI_INVOKE("update_activity_name", { id, name })),
-	getActivity: (id: string) => typedError<Activity, DatabaseError_Serialize>(__TAURI_INVOKE("get_activity", { id })).then((v) => ((v.status === "ok" ? { ...v, data: ({...v.data,start:([new Date(v.data.start[0])]),end:([v.data.end[0]==null?v.data.end[0]:new Date(v.data.end[0])])}) } : v) as typeof v)),
-	getAllActivities: () => typedError<Activity[], DatabaseError_Serialize>(__TAURI_INVOKE("get_all_activities")).then((v) => ((v.status === "ok" ? { ...v, data: v.data.map(i=>({...i,start:([new Date(i.start[0])]),end:([i.end[0]==null?i.end[0]:new Date(i.end[0])])})) } : v) as typeof v)),
+	getActivity: (id: string) => typedError<Activity, DatabaseError_Serialize>(__TAURI_INVOKE("get_activity", { id })).then((v) => ((v.status === "ok" ? { ...v, data: ({...v.data,start:new Date(v.data.start),end:v.data.end==null?v.data.end:new Date(v.data.end)}) } : v) as typeof v)),
+	getAllActivities: () => typedError<Activity[], DatabaseError_Serialize>(__TAURI_INVOKE("get_all_activities")).then((v) => ((v.status === "ok" ? { ...v, data: v.data.map(i=>({...i,start:new Date(i.start),end:i.end==null?i.end:new Date(i.end)})) } : v) as typeof v)),
 };
 
 /* Types */
