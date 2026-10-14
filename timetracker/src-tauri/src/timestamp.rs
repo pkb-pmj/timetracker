@@ -15,25 +15,7 @@ impl specta::Type for Timestamp {
         use std::borrow::Cow;
         static SENTINEL: &str = concat!(module_path!(), "::", stringify!(Timestamp));
         fn build(types: &mut specta::Types) -> datatype::DataType {
-            let mut e = datatype::Struct::unnamed()
-                .field({
-                    let mut field = datatype::Field::default();
-                    field.ty = Some(<DateTime<Utc> as specta::Type>::definition(types));
-                    field
-                })
-                .build();
-            match &mut e {
-                datatype::DataType::Struct(s) => {
-                    let attrs = &mut s.attributes;
-                    attrs.insert("serde:container:transparent", true);
-                }
-                datatype::DataType::Enum(en) => {
-                    let attrs = &mut en.attributes;
-                    attrs.insert("serde:container:transparent", true);
-                }
-                _ => unreachable!("specta derive generated non-container datatype"),
-            }
-            e
+            <DateTime<Utc> as specta::Type>::definition(types)
         }
         datatype::DataType::Reference(datatype::NamedDataType::init_with_sentinel(
             SENTINEL,
@@ -88,25 +70,7 @@ impl specta::Type for NullableTimestamp {
         use std::borrow::Cow;
         static SENTINEL: &str = concat!(module_path!(), "::", stringify!(NullableTimestamp));
         fn build(types: &mut specta::Types) -> datatype::DataType {
-            let mut e = datatype::Struct::unnamed()
-                .field({
-                    let mut field = datatype::Field::default();
-                    field.ty = Some(<Option<DateTime<Utc>> as specta::Type>::definition(types));
-                    field
-                })
-                .build();
-            match &mut e {
-                datatype::DataType::Struct(s) => {
-                    let attrs = &mut s.attributes;
-                    attrs.insert("serde:container:transparent", true);
-                }
-                datatype::DataType::Enum(en) => {
-                    let attrs = &mut en.attributes;
-                    attrs.insert("serde:container:transparent", true);
-                }
-                _ => unreachable!("specta derive generated non-container datatype"),
-            }
-            e
+            <Option<DateTime<Utc>> as specta::Type>::definition(types)
         }
         datatype::DataType::Reference(datatype::NamedDataType::init_with_sentinel(
             SENTINEL,
