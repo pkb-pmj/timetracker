@@ -5,33 +5,9 @@ use sqlx::{
     Type,
 };
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(transparent)]
+#[derive(Debug, Clone, Copy, specta::Type, Serialize, Deserialize)]
+#[serde(from = "DateTime<Utc>", into = "DateTime<Utc>")]
 pub struct Timestamp(DateTime<Utc>);
-
-impl specta::Type for Timestamp {
-    fn definition(types: &mut specta::Types) -> specta::datatype::DataType {
-        use specta::datatype;
-        use std::borrow::Cow;
-        static SENTINEL: &str = concat!(module_path!(), "::", stringify!(Timestamp));
-        fn build(types: &mut specta::Types) -> datatype::DataType {
-            <DateTime<Utc> as specta::Type>::definition(types)
-        }
-        datatype::DataType::Reference(datatype::NamedDataType::init_with_sentinel(
-            SENTINEL,
-            &[],
-            false,
-            false,
-            types,
-            |types, ndt| {
-                ndt.name = Cow::Borrowed("Timestamp");
-                ndt.module_path = Cow::Borrowed(module_path!());
-                ndt.ty = Some(build(types));
-            },
-            build,
-        ))
-    }
-}
 
 impl Type<Sqlite> for Timestamp {
     fn type_info() -> SqliteTypeInfo {
@@ -60,33 +36,21 @@ impl From<i64> for Timestamp {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct NullableTimestamp(Option<DateTime<Utc>>);
-
-impl specta::Type for NullableTimestamp {
-    fn definition(types: &mut specta::Types) -> specta::datatype::DataType {
-        use specta::datatype;
-        use std::borrow::Cow;
-        static SENTINEL: &str = concat!(module_path!(), "::", stringify!(NullableTimestamp));
-        fn build(types: &mut specta::Types) -> datatype::DataType {
-            <Option<DateTime<Utc>> as specta::Type>::definition(types)
-        }
-        datatype::DataType::Reference(datatype::NamedDataType::init_with_sentinel(
-            SENTINEL,
-            &[],
-            false,
-            false,
-            types,
-            |types, ndt| {
-                ndt.name = Cow::Borrowed("NullableTimestamp");
-                ndt.module_path = Cow::Borrowed(module_path!());
-                ndt.ty = Some(build(types));
-            },
-            build,
-        ))
+impl From<DateTime<Utc>> for Timestamp {
+    fn from(value: DateTime<Utc>) -> Self {
+        Self(value)
     }
 }
+
+impl Into<DateTime<Utc>> for Timestamp {
+    fn into(self) -> DateTime<Utc> {
+        self.0
+    }
+}
+
+#[derive(Debug, Clone, Copy, specta::Type, Serialize, Deserialize)]
+#[serde(from = "Option<DateTime<Utc>>", into = "Option<DateTime<Utc>>")]
+pub struct NullableTimestamp(Option<DateTime<Utc>>);
 
 impl Type<Sqlite> for NullableTimestamp {
     fn type_info() -> SqliteTypeInfo {
@@ -120,5 +84,17 @@ impl<'r> Decode<'r, Sqlite> for NullableTimestamp {
 impl From<Option<i64>> for NullableTimestamp {
     fn from(value: Option<i64>) -> Self {
         Self(value.map(|v| DateTime::from_timestamp_millis(v).expect("invalid timestamp")))
+    }
+}
+
+impl From<Option<DateTime<Utc>>> for NullableTimestamp {
+    fn from(value: Option<DateTime<Utc>>) -> Self {
+        Self(value)
+    }
+}
+
+impl Into<Option<DateTime<Utc>>> for NullableTimestamp {
+    fn into(self) -> Option<DateTime<Utc>> {
+        self.0
     }
 }
