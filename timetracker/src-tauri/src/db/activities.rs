@@ -128,6 +128,7 @@ pub async fn get_all_activities(db: State<'_, Database>) -> DatabaseResult<Vec<A
         r#"
             SELECT id AS "id: Uuid", start, end, name
             FROM activities
+            ORDER BY start ASC
         "#,
     )
     .fetch_all(db.pool())
