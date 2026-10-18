@@ -46,6 +46,14 @@
         if (result.status == 'ok') value = await commands.getActivity(result.data);
         await getAllActivities();
     }
+
+    function endActivity(id: string) {
+        return async () => {
+            const result = await commands.updateActivityEnd(id, new Date());
+            await getAllActivities();
+            if (result.status == 'error') throw result.error;
+        };
+    }
 </script>
 
 <main class="container">
@@ -81,9 +89,14 @@
                     <span class="name">{activity.name}</span>
                     <span class="id">#{activity.id}</span>
                 </div>
-                <span
-                    >{activity.start.toLocaleTimeString()} - {activity.end?.toLocaleTimeString()}</span
-                >
+                <span>
+                    {activity.start.toLocaleTimeString()} -
+                    {#if activity.end === null}
+                        <button onclick={endActivity(activity.id)}>End Activity</button>
+                    {:else}
+                        {activity.end?.toLocaleTimeString()}
+                    {/if}
+                </span>
             </li>
         {/each}
     </ol>
