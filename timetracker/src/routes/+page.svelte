@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type Activity, commands } from '#lib/bindings.js';
+    import { type Activity, commands } from '#lib/bindings.ts';
     import { invoke } from '@tauri-apps/api/core';
     import { LazyStore } from '@tauri-apps/plugin-store';
     import { onMount } from 'svelte';
