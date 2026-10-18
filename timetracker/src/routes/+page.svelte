@@ -1,7 +1,12 @@
 <script lang="ts">
-    import { commands } from '$lib/bindings';
+    import { type Activity, commands } from '$lib/bindings';
     import { invoke } from '@tauri-apps/api/core';
     import { LazyStore } from '@tauri-apps/plugin-store';
+    import { onMount } from 'svelte';
+
+    onMount(async () => {
+        getAllActivities();
+    });
 
     let name = $state('');
     let greetMsg = $state('');
@@ -28,9 +33,18 @@
         value = await invoke('create_event', { name });
     }
 
+    let activities = $state<Activity[]>([]);
+
+    async function getAllActivities() {
+        const result = await commands.getAllActivities();
+        if (result.status == 'ok') activities = result.data;
+        else throw result.error;
+    }
+
     async function startActivity() {
         const result = await commands.startActivity(new Date(), name);
         if (result.status == 'ok') value = await commands.getActivity(result.data);
+        await getAllActivities();
     }
 </script>
 
@@ -60,6 +74,19 @@
     <button onclick={() => createEvent(name)}>Create Event</button>
     <button onclick={startActivity}>Start Activity</button>
     <p>{JSON.stringify(value)}</p>
+    <ol>
+        {#each activities as activity}
+            <li class="activity">
+                <div>
+                    <span class="name">{activity.name}</span>
+                    <span class="id">#{activity.id}</span>
+                </div>
+                <span
+                    >{activity.start.toLocaleTimeString()} - {activity.end?.toLocaleTimeString()}</span
+                >
+            </li>
+        {/each}
+    </ol>
 </main>
 
 <style>
@@ -178,6 +205,16 @@
         }
         button:active {
             background-color: #0f0f0f69;
+        }
+    }
+
+    .activity {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        .id {
+            font-size: 0.8em;
+            color: gray;
         }
     }
 </style>
